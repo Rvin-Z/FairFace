@@ -1,0 +1,71 @@
+let questionArray = ["Rest", "Beer", "Split", "Know", "Episode", "Spot", "Perforate", "Snuggle", "Prove", "Tin", "Glass", "Essential", "Craft", "Peace", "Deal", "Favor", "Apology", "Denial", "Basic", "Gradient", "Hour", "Sweater", "Swear", "Lawyer", "Lip", "Econobox", "Chart", "Haircut", "Flu", "Obstacle", "Clique", "Ignore", "Remunerate", "Environmental", "Preach", "Misery", "Rub", "Aquarium", "Resign", "Edition", "Feather", "College", "Smile", "Menu", "Hypnothize", "Buy", "Eaux", "Soar", "Regular", "Charismatic", "test", "Tester", "test", "This", "ace", "five", "Four"]
+    
+    var searchingQuestions = [String()]
+    
+    var searching = false
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if searching {
+            return searchingQuestions.count
+            
+        } else {
+            return questionArray.count
+
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell")
+        if searching {
+            cell?.textLabel?.text = searchingQuestions[indexPath.row]
+        } else {
+            cell?.textLabel?.text = questionArray[indexPath.row]
+        }
+        return cell!
+        
+    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        let vc = storyboard?.instantiateViewController(identifier: "DetailedViewController") as? DetailedViewController
+        self.navigationController?.pushViewController(vc!, animated: true)
+        if searching {
+            vc?.question = searchingQuestions[indexPath.row]
+        } else {
+            vc?.question = questionArray[indexPath.row]
+        }
+        
+    }
+    
+    
+    @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var tableView: UITableView!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view.
+    }
+
+    func searchBar(_ searchBar:  UISearchBar, textDidChange searchText: String) {
+        
+        searchingQuestions = []
+        if searchText == "" {
+            searchingQuestions = questionArray
+        }
+        else {
+            for question in questionArray {
+                if question.lowercased().contains(searchText.lowercased()) {
+                    searchingQuestions.append(question)
+                }
+            }
+        }
+        
+        //searchingQuestions = questionArray.filter({$0.lowercased().prefix(searchText.count) == searchText.lowercased()})
+        searching = true
+        self.tableView.reloadData()
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        searching = false
+        searchBar.text = ""
+        tableView.reloadData()
+    }
